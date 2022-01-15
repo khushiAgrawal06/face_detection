@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ML Kit Demo'),
+        title: Text('COLLEGE PROJECT'),
       ),
       body: ListView.builder(
           itemCount: itemsList.length,

@@ -23,6 +23,35 @@ class _DetailScreenState extends State<DetailScreen> {
 
   List<Rect> rect = <Rect>[];
 
+  snackBar(String message) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.blue,
+        elevation: 14,
+        content: Text(
+          message,
+          style: TextStyle(
+              fontSize: 17,
+              fontFamily: 'Quicksand-Regular',
+              fontWeight: FontWeight.w700,
+              color: Colors.white),
+        ),
+        duration: Duration(seconds: 6),
+      ),
+    );
+  }
+
+  buildShowDialog(BuildContext context) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        });
+  }
+
   getImageFromGallery() async {
     var tempStore = await ImagePicker().getImage(source: ImageSource.gallery);
 
@@ -54,6 +83,7 @@ class _DetailScreenState extends State<DetailScreen> {
             result = result + ' ' + word.text;
           });
         }
+
       }
     }
   }
@@ -103,6 +133,9 @@ class _DetailScreenState extends State<DetailScreen> {
     setState(() {
       isFaceDetected = true;
     });
+
+    Navigator.pop(context);
+    snackBar("Face Detected");
   }
 
   void detectMLFeature(String selectedFeature) {
@@ -141,43 +174,58 @@ class _DetailScreenState extends State<DetailScreen> {
       ),
       body: Column(
         children: [
-          SizedBox(height: 100),
+          //SizedBox(height: 100),
           isImageLoaded && !isFaceDetected
-              ? Center(
-            child: Container(
-              height: 250.0,
-              width: 250.0,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: FileImage(pickedImage), fit: BoxFit.cover)),
+              ? Expanded(
+                child: Center(
+            child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 40,
+                 // bottom: 200,
+                  left: 40,
+                  right: 40
+                ),
+                child: Container(
+                  height: MediaQuery.of(context).size.height-150,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: FileImage(pickedImage), fit: BoxFit.cover)),
+                ),
             ),
-          )
+          ),
+              )
               : isImageLoaded && isFaceDetected
-              ? Center(
+              ? Expanded(
+                child: Center(
             child: Container(
-              child: FittedBox(
-                child: SizedBox(
-                  width: imageFile.width.toDouble(),
-                  height: imageFile.height.toDouble(),
-                  child: CustomPaint(
-                    painter:
-                    FacePainter(rect: rect, imageFile: imageFile),
+                child: FittedBox(
+                  child: SizedBox(
+                    width: imageFile.width.toDouble(),
+                    height: imageFile.height.toDouble(),
+                    child: CustomPaint(
+                      painter:
+                      FacePainter(rect: rect, imageFile: imageFile),
+                    ),
                   ),
                 ),
-              ),
             ),
-          )
+          ),
+
+              )
               : Container(),
-          SizedBox(height: 30),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(result),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(result,style: TextStyle(fontSize: 40),),
+            ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           detectMLFeature(selectedItem);
+          buildShowDialog(context);
         },
         child: Icon(Icons.check),
       ),
@@ -202,7 +250,7 @@ class FacePainter extends CustomPainter {
         rectange,
         Paint()
           ..color = Colors.teal
-          ..strokeWidth = 6.0
+          ..strokeWidth = 60.0
           ..style = PaintingStyle.stroke,
       );
     }
